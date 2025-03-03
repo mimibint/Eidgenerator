@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Eid Name Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; padding: 20px; background: #f0f8ff; }
+        h1 { color: #2a7b5f; }
+        button { padding: 10px 20px; margin-top: 20px; background-color: #2a7b5f; color: white; border: none; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #256a52; }
+        pre { background: #fff; padding: 15px; border: 1px solid #ccc; white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+
+<h1>Secret Eid Name Generator</h1>
+<p>Click the button below to generate new Secret Eid assignments. Each person will be assigned someone from another family.</p>
+
+<button onclick="runGenerator()">Generate Assignments</button>
+
+<h2>Assignments:</h2>
+<pre id="output">Click the button to generate!</pre>
+
+<script>
+const families = {
+    family1: ['ALEEM', 'PARVEEN', 'YUSUF', 'ABDULLAH', 'MARYAM'],
+    family2: ['RASHNA', 'SHOWKOT', 'AZEEM', 'SUMAYYAH', 'HUMAYRA', 'JUHEL'],
+    family3: ['KAYUM', 'SAALIHA', 'IBRAHIM', 'QAASIM', 'BILAL', 'RAFI', 'HALEEMA'],
+    family4: ['SHAHED', 'NAZMA', 'ZUHAYRA', 'ZAKARIYYA', 'ZIYAAD']
+};
+
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function generateAssignments() {
+    const allPeople = [...families.family1, ...families.family2, ...families.family3, ...families.family4];
+    const assignments = {};
+
+    for (const [familyName, members] of Object.entries(families)) {
+        for (const person of members) {
+            let possibleReceivers = allPeople.filter(name => 
+                !families[familyName].includes(name) && 
+                !Object.values(assignments).includes(name)
+            );
+
+            if (possibleReceivers.length === 0) return null;
+
+            const receiver = possibleReceivers[Math.floor(Math.random() * possibleReceivers.length)];
+            assignments[person] = receiver;
+        }
+    }
+    return assignments;
+}
+
+function runGenerator() {
+    let result;
+    let attempts = 0;
+    do {
+        result = generateAssignments();
+        attempts++;
+    } while (!result && attempts < 1000);
+
+    if (!result) {
+        document.getElementById('output').textContent = 'Failed to generate a valid assignment after many tries.';
+        return;
+    }
+
+    let outputText = '';
+    for (const [giver, receiver] of Object.entries(result)) {
+        outputText += `${giver} → ${receiver}\n`;
+    }
+    document.getElementById('output').textContent = outputText;
+}
+</script>
+
+</body>
+</html>
